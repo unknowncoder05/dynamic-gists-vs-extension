@@ -10,14 +10,20 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:dynacmic-gists-js.helloWorld"
+		"onCommand:dynacmic-gists-js.buildGistFile",
+		"onCommand:dynacmic-gists-js.buildGistProject"
+
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "dynacmic-gists-js.helloWorld",
-				"title": "Hello World"
+				"command": "dynacmic-gists-js.buildGistFile",
+				"title": "Build Gist"
+			},
+			{
+				"command": "dynacmic-gists-js.buildGistProject",
+				"title": "Build Gist Project"
 			}
 		]
 	},
@@ -47,5 +53,8 @@
 		"webpack": "^5.52.1",
 		"webpack-cli": "^4.8.0",
 		"@vscode/test-electron": "^1.6.2"
+	},
+	"dependencies": {
+		"dynamic-gists": "file:../../../../../../usr/local/lib/node_modules/dynamic-gists"
 	}
 }
