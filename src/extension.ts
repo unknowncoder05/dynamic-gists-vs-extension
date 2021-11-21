@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { FileCompiler, ProjectCompiler, TestData } from 'dynamic-gists-client';
+import { PythonCompiler } from 'dynamic-gists-client';
 import path = require('path');
 import fsLibrary = require('fs');
 
@@ -30,7 +30,7 @@ async function buildGistFile(newFilePath?:string){
 	if(activeEditor){
 		let newCompiledFilePath = newFilePath ? newFilePath: activeEditor.document.fileName;
 		
-		const fileCompiler = new FileCompiler({
+		const fileCompiler = new PythonCompiler.FileCompiler({
 			block: JSON.parse(activeEditor.document.getText()),
 			args: {},
 			baseRoute: newCompiledFilePath,
@@ -41,8 +41,11 @@ async function buildGistFile(newFilePath?:string){
 	}
 }
 async function readJsonFromFileVSC(path:string){
+	console.log("1", path);
 	let document = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
+	console.log("2", document);
 	let parsedJson = JSON.parse(document.getText());
+	console.log("3", parsedJson);
 	return parsedJson;
 }
 
@@ -50,12 +53,14 @@ async function buildGistProject(){
 	const activeEditor = vscode.window.activeTextEditor;
 	if(activeEditor){
 		try{
-			const projectCompiler = new ProjectCompiler({
+			const projectCompiler = new PythonCompiler.ProjectCompiler({
 				project: JSON.parse(activeEditor.document.getText()),
 				projectPath: path.dirname(activeEditor.document.fileName),
 				readJsonFromFile: readJsonFromFileVSC
 			});
+			console.log("projectCompiler", projectCompiler);
 			const compiledFiles = await projectCompiler.compile();
+			console.log("compiledFiles", compiledFiles);
 			for(const compiledFile of compiledFiles){
 				saveCompiledFile(compiledFile);
 			}
