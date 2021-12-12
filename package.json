@@ -11,12 +11,16 @@
 	],
 	"activationEvents": [
 		"onCommand:dynacmic-gists-js.buildGistFile",
-		"onCommand:dynacmic-gists-js.buildGistProject"
-
+		"onCommand:dynacmic-gists-js.buildGistProject",
+		"onLanguage:javascript"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
+			{
+				"command": "dynacmic-gists-js.test",
+				"title": "Test"
+			},
 			{
 				"command": "dynacmic-gists-js.buildGistFile",
 				"title": "Build Gist"

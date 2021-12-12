@@ -7,12 +7,15 @@ import fsLibrary = require('fs');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-const commandNames = {
-	buildGistFile: "buildGistFile",
-	buildGistProject: "buildGistProject"
-};
 
 const extensionName = "dynacmic-gists-js";
+
+const commandNames = {
+	buildGistFile: `${extensionName}.buildGistFile`,
+	buildGistProject: `${extensionName}.buildGistProject`,
+	test: `${extensionName}.Test`
+
+};
 
 function saveCompiledFile(compiledFile:any){
 	fsLibrary.writeFile(
@@ -40,12 +43,10 @@ async function buildGistFile(newFilePath?:string){
 		saveCompiledFile(compiledFile);
 	}
 }
+
 async function readJsonFromFileVSC(path:string){
-	console.log("1", path);
 	let document = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
-	console.log("2", document);
 	let parsedJson = JSON.parse(document.getText());
-	console.log("3", parsedJson);
 	return parsedJson;
 }
 
@@ -67,22 +68,41 @@ async function buildGistProject(){
 		} catch(err){
 			console.error("caught err",err);
 		}
-		
-		
+	}
+}
+
+class TestHoverProvider implements vscode.HoverProvider{
+	public provideHover(doc: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.Hover {
+		const commentCommandUri = vscode.Uri.parse(`command:${commandNames.test}`);
+		const commentCommandUri2 = vscode.Uri.parse(`command:editor.action.addCommentLine`);
+		const contents = new vscode.MarkdownString(`[Test](${commentCommandUri}) [Add comment](${commentCommandUri2})`);
+		contents.isTrusted = true;
+		const range = doc.getWordRangeAtPosition(position);
+		const word = doc.getText(range);
+		return new vscode.Hover(contents);
 	}
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	
+	context.subscriptions.push(vscode.languages.registerHoverProvider(
+		'javascript', new TestHoverProvider()
+	));
+
 	context.subscriptions.push(vscode.commands.registerCommand(
-		`${extensionName}.${commandNames.buildGistFile}`,
+		commandNames.buildGistFile,
 		buildGistFile
 	));
 
 	context.subscriptions.push(vscode.commands.registerCommand(
-		`${extensionName}.${commandNames.buildGistProject}`,
+		commandNames.buildGistProject,
 		buildGistProject
 	));
-}
 
+	context.subscriptions.push(vscode.commands.registerCommand(
+		commandNames.test,
+		() => vscode.window.showInformationMessage('Test Command')
+	));
+	
+}
+	  
 export function deactivate() {}
