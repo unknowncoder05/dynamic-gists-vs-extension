@@ -12,7 +12,8 @@
 	"activationEvents": [
 		"onCommand:dynacmic-gists-js.buildGistFile",
 		"onCommand:dynacmic-gists-js.buildGistProject",
-		"onLanguage:javascript"
+		"onLanguage:javascript",
+		"onLanguage:python"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -28,6 +29,10 @@
 			{
 				"command": "dynacmic-gists-js.buildGistProject",
 				"title": "Build Gist Project"
+			},
+			{
+				"command": "dynacmic-gists-js.pythonAddElseIf",
+				"title": "Python Add Else If"
 			}
 		]
 	},

@@ -3,22 +3,27 @@
 import { types } from 'util';
 import * as vscode from 'vscode';
 import { commands as gistCommands } from './gists/commands/commands';
+import { hovers as gistHovers } from './gists/hovers/hovers';
 import { Command } from './types/command';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
 export function activate(context: vscode.ExtensionContext) {
-	/*context.subscriptions.push(vscode.languages.registerHoverProvider(
-		'javascript', new TestHoverProvider()
-	));*/
 	
-	const commands = gistCommands;
-	for(const commandIndex in commands){
-		const command = (commands as any)[commandIndex];
+	for(const commandIndex in gistCommands){
+		const command = (gistCommands as any)[commandIndex];
 		context.subscriptions.push(vscode.commands.registerCommand(
 			command.name,
 			command.function
+		));
+	}
+
+	for(const hoverIndex in gistHovers){
+		const hover = (gistHovers as any)[hoverIndex];
+		context.subscriptions.push(vscode.languages.registerHoverProvider(
+			hover.selector,
+			new hover.provider()
 		));
 	}
 	

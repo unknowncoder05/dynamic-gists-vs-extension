@@ -7,8 +7,6 @@ export class TestHoverProvider implements HoverProvider{
 		const commentCommandUri2 = Uri.parse(`command:editor.action.addCommentLine`);
 		const contents = new MarkdownString(`[Test](${commentCommandUri}) [Add comment](${commentCommandUri2})`);
 		contents.isTrusted = true;
-		const range = doc.getWordRangeAtPosition(position);
-		const word = doc.getText(range);
 		return new Hover(contents);
 	}
 }
