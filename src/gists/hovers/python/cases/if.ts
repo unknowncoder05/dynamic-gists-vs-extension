@@ -3,11 +3,10 @@ import { commands } from './../../../commands/commands';
 
 
 export function ifHandler(doc: TextDocument, position: Position, token: CancellationToken): Hover{
-    console.log('if handler');
-    
-    const commentCommandUri = Uri.parse(`command:${commands.pythonAddElseIf.name}}`);
-    console.log(commentCommandUri);
-    const contents = new MarkdownString(`[Add Else If](${commentCommandUri})`);
+    const args = [{ codeLine: position.line }];
+    const pythonAddElseIfCommandUri = Uri.parse(`command:${commands.pythonAddElseIf.name}?${encodeURIComponent(JSON.stringify(args))}`);
+    const pythonAddElseCommandUri = Uri.parse(`command:${commands.pythonAddElse.name}?${encodeURIComponent(JSON.stringify(args))}`);
+    const contents = new MarkdownString(`[Add Else If](${pythonAddElseIfCommandUri}) | [Add Else](${pythonAddElseCommandUri})`);
     contents.isTrusted = true;
     return new Hover(contents);
 }

@@ -32,7 +32,11 @@
 			},
 			{
 				"command": "dynacmic-gists-js.pythonAddElseIf",
-				"title": "Python Add Else If"
+				"title": "Python add Else If to If block"
+			},
+			{
+				"command": "dynacmic-gists-js.pythonAddElse",
+				"title": "Python add Else to If block"
 			}
 		]
 	},

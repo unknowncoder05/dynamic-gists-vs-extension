@@ -1,7 +1,7 @@
 import { buildGistFile } from './buildFile';
 import { buildGistProject } from './buildProject';
 import { testCommand } from './testCommand';
-import { pythonAddElseIfCommand } from './python/logicCommands';
+import { pythonAddElseIfCommand, pythonAddElseCommand } from './python/logicCommands';
 
 export const extensionName = "dynacmic-gists-js";
 
@@ -21,6 +21,10 @@ export const commands = {
     pythonAddElseIf: {
         name: `${extensionName}.pythonAddElseIf`,
         function: pythonAddElseIfCommand,
-    }
+    },
+    pythonAddElse: {
+        name: `${extensionName}.pythonAddElse`,
+        function: pythonAddElseCommand,
+    },
 
 };
