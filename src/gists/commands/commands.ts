@@ -1,3 +1,4 @@
+import { mainPanelCommand } from './webViews/mainPanel';
 import { buildGistFile } from './buildFile';
 import { buildGistProject } from './buildProject';
 import { testCommand } from './testCommand';
@@ -25,6 +26,10 @@ export const commands = {
     pythonAddElse: {
         name: `${extensionName}.pythonAddElse`,
         function: pythonAddElseCommand,
+    },
+    mainPanel: {
+        name: `${extensionName}.mainPanel`,
+        function: mainPanelCommand,
     },
 
 };

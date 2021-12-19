@@ -12,12 +12,18 @@
 	"activationEvents": [
 		"onCommand:dynacmic-gists-js.buildGistFile",
 		"onCommand:dynacmic-gists-js.buildGistProject",
+		"onCommand:dynacmic-gists-js.mainPanel",
 		"onLanguage:javascript",
 		"onLanguage:python"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
+			{
+				"command": "dynacmic-gists-js.mainPanel",
+				"title": "Start new Gists main panel",
+				"category": "Gists Main Panel"
+			},
 			{
 				"command": "dynacmic-gists-js.test",
 				"title": "Test"
@@ -38,7 +44,16 @@
 				"command": "dynacmic-gists-js.pythonAddElse",
 				"title": "Python add Else to If block"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+			  {
+				"id": "gist-crud",
+				"title": "Gists",
+				"icon": "resources/package-explorer.svg"
+			  }
+			]
+		  }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
