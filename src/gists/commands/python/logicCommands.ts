@@ -22,25 +22,17 @@ function getElseIfBlock(startLine:number, activeEditor: TextEditor): any{
     for(let i = startLine+1; i < initialLineCount; i++){
         const currentLineContent = activeEditor.document.lineAt(i).text;
         const currentInitialSpacing = getTextTabulation(currentLineContent);
-        console.log('-----------------------------------------');
-        console.log('currentLineContent', currentLineContent);
-        console.log('currentInitialSpacing', currentInitialSpacing);
-        console.log('initialSpacing', initialSpacing);
-        console.log('subBlocks', subBlocks);
         if(initialSpacing === currentInitialSpacing){
             if(/else\s?:*$/.test(currentLineContent) || /elif.*:.*$/.test(currentLineContent)){
-                console.log('is else if or else');
                 subBlocks.push([currentLineContent]);
                 continue;
             }
             if(/[^\s]+$/.test(currentLineContent)){
-                console.log('is an other block');
                 blockEndLine = i;
                 break;
             }
         }
         if(initialSpacing > currentInitialSpacing){
-            console.log('is end of block');
             blockEndLine = i;
             break;
         }
@@ -49,7 +41,6 @@ function getElseIfBlock(startLine:number, activeEditor: TextEditor): any{
     if(blockEndLine === -1){
         blockEndLine = initialLineCount+1;
     }
-    console.log('>---------------------------------------<');
     return {
         subBlocks,
         blockEndLine,
@@ -70,12 +61,12 @@ export async function pythonAddElseIfCommand() {
         return;
     }
     const ifBlock = getElseIfBlock(activeLine, activeEditor);
-    console.log('ifBlock', ifBlock);
     await activeEditor.edit((editBuilder: TextEditorEdit) => {
         editBuilder.insert(
             new Position(ifBlock.blockEndLine-1, ifBlock.subBlocks.slice(-1)[0].slice(-1)[0].length),
             `\n${' '.repeat(ifBlock.initialSpacing)}elif True:\n${' '.repeat(ifBlock.initialSpacing+ifBlock.editorTabSize)}pass`
         );
     });
+    // TODO: set text selection at the 'True' word so that users can instantly edit
     return;
 }
