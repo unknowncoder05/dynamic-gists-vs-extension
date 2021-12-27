@@ -9,6 +9,7 @@ const path = require('path');
 
 /** @type WebpackConfig */
 const extensionConfig = {
+  name:'extension',
   target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
@@ -17,7 +18,8 @@ const extensionConfig = {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
     path: path.resolve(__dirname, 'dist'),
     filename: 'extension.js',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'commonjs2',
+    devtoolModuleFilenameTemplate: '../[resource-path]',
   },
   externals: {
     vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
@@ -40,9 +42,42 @@ const extensionConfig = {
       }
     ]
   },
-  devtool: 'nosources-source-map',
+  devtool: 'source-map',
   infrastructureLogging: {
     level: "log", // enables logging required for problem matchers
   },
+  performance: {
+    maxEntrypointSize: 400000,
+    maxAssetSize: 400000
+  }
 };
-module.exports = [ extensionConfig ];
+
+/** @type WebpackConfig */
+const mainPanelWebViewConfig = {
+  name: 'mainpanel',
+  target: 'web',
+  entry: './src/gists/webViews/mainpanel/index.tsx',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'mainpanel.js'
+  },
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['.ts', '.js', '.tsx', '.jsx']
+  },
+  module: {
+    rules: [{
+      test: /\.(ts|tsx)$/,
+      exclude: /node_modules/,
+      use: [{
+        loader: 'ts-loader'
+      }]
+    }]
+  },
+  performance: {
+    maxEntrypointSize: 400000,
+    maxAssetSize: 400000
+  }
+};
+
+module.exports = [ extensionConfig, mainPanelWebViewConfig ];

@@ -14,7 +14,13 @@ For example if there is an image subfolder under your extension project workspac
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+This extension uses the (non)published module dynamic-gists-client
+in order to install the module:
+- clone the repo https://github.com/unknowncoder05/dynamic-gists-client
+- execute `npm i` in the project base directory, to install all dependencies
+- execute `npm run build` in the project base directory, to build the module
+- execute `npm link` in the project base directory, to create a link to the project in your system
+- execute `npm link dynamic-gists-client` in THIS project base directory, to link the module in this project's modules
 
 ## Extension Settings
 

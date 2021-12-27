@@ -20,11 +20,6 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "dynacmic-gists-js.mainPanel",
-				"title": "Start new Gists main panel",
-				"category": "Gists Main Panel"
-			},
-			{
 				"command": "dynacmic-gists-js.test",
 				"title": "Test"
 			},
@@ -47,30 +42,43 @@
 		],
 		"viewsContainers": {
 			"activitybar": [
-			  {
-				"id": "gist-crud",
-				"title": "Gists",
-				"icon": "resources/package-explorer.svg"
-			  }
+				{
+					"id": "extension-panel-main",
+					"title": "DynamicGists",
+					"icon": "resources/default.svg"
+				}
 			]
-		  }
+		},
+		"views": {
+			"extension-panel-main": [
+				{
+					"id": "extension.panel.main",
+					"name": "DynamicGists",
+					"icon": "resources/default.svg",
+					"contextualTitle": "DynamicGists",
+					"type": "webview"
+				}
+			]
+		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run package",
-		"compile": "webpack",
-		"watch": "webpack --watch",
+		"vscode:prepublish": "npm run clean && webpack --mode production",
 		"package": "webpack --mode production --devtool hidden-source-map",
 		"compile-tests": "tsc -p . --outDir out",
 		"watch-tests": "tsc -p -w . --outDir out",
 		"pretest": "npm run compile-tests && npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"build:ext": "webpack --mode development",
+		"dev:ext": "webpack --mode development --watch"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.61.0",
 		"@types/glob": "^7.1.4",
 		"@types/mocha": "^9.0.0",
 		"@types/node": "14.17.27",
+		"@types/react": "17.0.13",
+		"@types/react-dom": "17.0.8",
 		"@typescript-eslint/eslint-plugin": "^5.1.0",
 		"@typescript-eslint/parser": "^5.1.0",
 		"eslint": "^8.1.0",
@@ -83,6 +91,9 @@
 		"@vscode/test-electron": "^1.6.2"
 	},
 	"dependencies": {
-		"dynamic-gists": "file:../../../../../../usr/local/lib/node_modules/dynamic-gists"
+		"dynamic-gists-client": "file:../../../../../../usr/local/lib/node_modules/dynamic-gists",
+		"react": "17.0.2",
+		"react-dom": "17.0.2",
+		"wc-react": "0.5.0"
 	}
 }
