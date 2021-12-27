@@ -13,7 +13,7 @@ export async function mainPanelCommand(){
 // Author: https://github.com/estruyf
 export class MainPanelView implements WebviewViewProvider, Disposable {
     public static readonly viewType = "mainPanelView";
-    public static readonly title = "DynamicGists";
+    public static readonly title = "Dynamic Gists";
     public static readonly stylesLocation = "resources/media/styles.css";
     public static readonly scriptLocation = "dist/mainpanel.js";
     private static instance: MainPanelView;

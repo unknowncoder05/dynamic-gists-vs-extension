@@ -24,9 +24,8 @@ export function activate(context: vscode.ExtensionContext) { // TODO: replace to
 			new hover.provider()
 		));
 	}
-
 	for(const webViewName in gistWebViews){
-		const webView = (gistHovers as any)[webViewName];
+		const webView = (gistWebViews as any)[webViewName];
 		const webViewInstance = webView.view.getInstance(context.extensionUri);
 		let webViewRegistered = vscode.window.registerWebviewViewProvider(webView.type, webViewInstance, {
 			webviewOptions: {
