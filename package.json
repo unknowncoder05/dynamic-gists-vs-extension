@@ -52,7 +52,7 @@
 		"views": {
 			"extension-panel-main": [
 				{
-					"id": "extension.panel.main",
+					"id": "dynacmic-gists-js.mainPanelView",
 					"name": "DynamicGists",
 					"icon": "resources/default.svg",
 					"contextualTitle": "DynamicGists",
