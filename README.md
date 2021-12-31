@@ -22,6 +22,16 @@ in order to install the module:
 - execute `npm link` in the project base directory, to create a link to the project in your system
 - execute `npm link dynamic-gists-client` in THIS project base directory, to link the module in this project's modules
 
+
+**Caution**
+this extension has some modifications for local testing, so in order to run it with access to the gists api
+remove the port portMapping src/gists/webViews/mainpanel/view.ts
+```js
+portMapping: [
+    { webviewPort: 8000, extensionHostPort: 8000}
+]
+```
+
 ## Extension Settings
 
 Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.

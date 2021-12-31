@@ -1,4 +1,5 @@
 import { ViewColumn, CancellationToken, Disposable, Uri, Webview, WebviewView, WebviewViewProvider, WebviewViewResolveContext, window, workspace, extensions, commands } from "vscode";
+import { backendUrl } from './../../config';
 
 export async function mainPanelCommand(){
     const panel = window.createWebviewPanel(
@@ -22,15 +23,15 @@ export class MainPanelView implements WebviewViewProvider, Disposable {
     private disposable: Disposable | null = null;
     private panelActions: any = null;
   
-    private constructor(private readonly extPath: Uri) {}
+    private constructor(private readonly backendUri:string, private readonly extPath: Uri) {}
   
     /**
      * Creates the singleton instance for the panel
      * @param extPath 
      */
-    public static getInstance(extPath?: Uri): MainPanelView {
+    public static getInstance(backendUri: string, extPath?: Uri): MainPanelView {
       if (!MainPanelView.instance) {
-        MainPanelView.instance = new MainPanelView(extPath as Uri);
+        MainPanelView.instance = new MainPanelView(backendUri as string, extPath as Uri);
       }
   
       return MainPanelView.instance;
@@ -64,7 +65,7 @@ export class MainPanelView implements WebviewViewProvider, Disposable {
       webviewView.webview.options = {
         enableScripts: true,
         enableCommandUris: true,
-        localResourceRoots: [this.extPath]
+        localResourceRoots: [this.extPath],
       };
       
       webviewView.webview.html = this.getWebviewContent(webviewView.webview);
@@ -73,63 +74,21 @@ export class MainPanelView implements WebviewViewProvider, Disposable {
               webviewView.onDidDispose(() => { webviewView.webview.html = ""; }, this),
       );
   
-      // webviewView.onDidChangeVisibility(async () => {
-      //   if (this.visible) {
-      //     await this.getSettings();
-      //   }
-      // });
-  
-      window.onDidChangeActiveTextEditor(async () => {
-        await this.getSettings();
-      }, this);
-  
-      webviewView.webview.onDidReceiveMessage(msg => {
+      webviewView.webview.onDidReceiveMessage(async msg => {
+        console.log('got message!', msg);
         switch (msg.command) {
-          case 'trigger':
-            if (!!msg.data.data) {
-              commands.executeCommand(msg.data.command, msg.data.data);
-            } else {
-              commands.executeCommand(msg.data.command);
-            }
+          case 'getRefreshToken':
+            webviewView.webview.postMessage({ command:'getRefreshTokenResponse', token: undefined });
             return;
-          case 'getSettings':
-            this.getSettings();
+          case 'getApiUri':
+            webviewView.webview.postMessage({ command:'getApiUriResponse', apiUri: this.backendUri});
             return;
           default:
             return;
         }
       });
     }
-  
-  
-    /**
-     * Retrieve the extension settings
-     */
-    private async getSettings() {
-      this.panelActions = [];
-  
-      const allExtensions = extensions.all.filter(e => !e.id.startsWith('vscode') && !e.id.startsWith('ms-vscode'));
-  
-      for await (const ext of allExtensions) {
-        try {
-          const values = await commands.executeCommand(`${ext.id}.panel.registration`);
-  
-          this.panelActions.push(values);
-        } catch (e) {
-          // The extension does not have a panel registration
-        }
-      }
-  
-      const total = this.panelActions.length;
-      this.panel!.title = `${total} Connection${total === 1 ? '' : 's'}`;
-  
-      this.panel!.webview.postMessage({
-        command: 'settings',
-        data: this.panelActions
-      });
-    }
-  
-  
+
     private getNonce() {
       let text = '';
       const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -147,12 +106,12 @@ export class MainPanelView implements WebviewViewProvider, Disposable {
       const stylesUri = webView.asWebviewUri(Uri.joinPath(this.extPath, 'assets/media', 'styles.css'));//webView.asWebviewUri(Uri.joinPath(this.extPath, Object.getPrototypeOf(this).stylesLocation));
       const scriptUri = webView.asWebviewUri(Uri.joinPath(this.extPath, 'dist', 'mainpanel.js'));//webView.asWebviewUri(Uri.joinPath(this.extPath, Object.getPrototypeOf(this).scriptLocation));
       const nonce = this.getNonce();
-  
+
       return `
         <!DOCTYPE html>
         <html lang="en">
         <head>
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webView.cspSource} 'self' 'unsafe-inline'; script-src 'nonce-${nonce}'; style-src ${webView.cspSource} 'self' 'unsafe-inline'; font-src ${webView.cspSource};">
+          <meta http-equiv="Content-Security-Policy" content="default-src ${this.backendUri}; img-src ${webView.cspSource} 'self' 'unsafe-inline'; script-src 'nonce-${nonce}'; style-src ${webView.cspSource} 'self' 'unsafe-inline'; font-src ${webView.cspSource};">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link href="${stylesUri}" rel="stylesheet">
           <title>${Object.getPrototypeOf(this).title}</title>

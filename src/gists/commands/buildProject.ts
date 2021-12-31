@@ -1,6 +1,6 @@
 import {saveCompiledFile, readJsonFromFileVSC} from './../utils';
 import { window } from 'vscode';
-import { PythonCompiler } from 'dynamic-gists-client';
+import { PythonCompiler } from 'dynamic-gists-compilers';
 import path = require('path');
 
 export async function buildGistProject(){

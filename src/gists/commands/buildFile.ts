@@ -1,6 +1,6 @@
 import { window } from 'vscode';
 import {saveCompiledFile, readJsonFromFileVSC} from './../utils';
-import { PythonCompiler } from 'dynamic-gists-client';
+import { PythonCompiler } from 'dynamic-gists-compilers';
 
 export async function buildGistFile(newFilePath?:string){
 	const activeEditor = window.activeTextEditor;
