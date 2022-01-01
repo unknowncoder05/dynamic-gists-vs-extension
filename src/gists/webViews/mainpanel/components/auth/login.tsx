@@ -4,7 +4,7 @@ import { Api } from 'dynamic-gists-client';
 // import { ClientVsCode } from './../../types';
 
 export interface ILoginFormProps {
-    setAuthToken: Function,
+    setTokens: Function,
     setError: Function,
     vscode:any,
     apiUri:string
@@ -20,7 +20,7 @@ export const LoginForm: React.FunctionComponent<ILoginFormProps> = (props: React
     const authTokens = await Api.Authentication.auth(email, password, props.apiUri);
     //console.log('authTokens', authTokens);
     if(authTokens.status === 200){
-      props.setAuthToken(authTokens.data.access);
+      props.setTokens(authTokens.data.access, authTokens.data.refresh);
     } else if(authTokens.status !== 500){
       props.setError({msg:authTokens.data.details});
     }

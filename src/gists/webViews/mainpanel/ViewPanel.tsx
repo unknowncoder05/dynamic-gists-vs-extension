@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import { Api } from 'dynamic-gists-client';
 import { LoginForm } from './components/auth/login';
 import { ClientVsCode } from './types';
-
+import { ListGists } from './components/gists/list';
+import Navbar from 'react-bootstrap/Navbar';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
 
 
 declare const acquireVsCodeApi: <T = unknown>() => ClientVsCode<T>;
@@ -15,8 +18,9 @@ export interface IViewProps {}
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ViewPanel: React.FunctionComponent<IViewProps> = (props: React.PropsWithChildren<IViewProps>) => {
-  const [authToken, setAuthToken] = useState<string | undefined>();
-  const [authTokenLoaded, setAuthTokenLoaded] = useState<boolean>(false);
+  const [extensionLoaded, setExtensionLoaded] = useState<boolean>(false);
+  const [authed, setAuthed] = useState<boolean>(false);
+  const [currentPath, setCurrentPath] = useState<string>('');
   const [apiUri, setApiUri] = useState<string>('');
   const [error, setError] = useState<string>('');
   
@@ -25,16 +29,34 @@ export const ViewPanel: React.FunctionComponent<IViewProps> = (props: React.Prop
     vscode.postMessage({command:'getApiUri'});
   }, []);
 
+  function setLocalAuthToken(authToken:string){
+    localStorage.setItem('authToken', authToken);
+    setAuthed(true);
+  }
+
+  function setTokens(authToken:string, refreshToken:string){
+    setLocalRefreshToken(authToken);
+    setLocalAuthToken(refreshToken);
+    vscode.postMessage({command:'setRefreshToken', token:refreshToken});
+  }
+
+  function setLocalRefreshToken(refreshToken:string){
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+
   // Handle plugin messages
   window.addEventListener('message', async event => {
     const message = event.data;
     // Handle refresh token request to the workspace storage
     if(message.command === 'getRefreshTokenResponse'){
-      localStorage.setItem('authToken', message.token);
-      // TODO: Api call for refrishing token
-      const authToken = message.token;
-      setAuthToken(authToken);
-      setAuthTokenLoaded(true);
+      setLocalRefreshToken(message.token);
+      // TODO: Api call for refreshing token
+      const refreshToken = message.token;
+      if(refreshToken){
+        const refreshResponse = await Api.Authentication.refresh(refreshToken, apiUri);
+        setLocalAuthToken(refreshResponse.data.access);
+      }
+      setExtensionLoaded(true);
     }
     if(message.command === 'getApiUriResponse'){
       setApiUri(message.apiUri);
@@ -42,25 +64,41 @@ export const ViewPanel: React.FunctionComponent<IViewProps> = (props: React.Prop
     
   });
   
-
-  function getInitialView(){
-    if(authTokenLoaded){
-      if(authToken){
-        return `you are logged in! ${authToken}`;
-      } else {
-        return <LoginForm setAuthToken={setAuthToken} vscode={vscode} apiUri={apiUri} setError={setError}/>;
+  function getPathView(){
+    if(extensionLoaded){
+      if(!authed){
+        return <LoginForm setTokens={setTokens} vscode={vscode} apiUri={apiUri} setError={setError}/>;
       }
     } else {
       return 'loading...';
+    }
+
+    switch (currentPath) {
+      case '/home':
+        return 'gists!';
+      case '/gists/list':
+        return <ListGists vscode={vscode} apiUri={apiUri}/>;
+    
+      default:
+        break;
     }
   }
 
   return (
     <div>
-      Hello There1!
+      {currentPath}<br/>
+      Hello There!
       <br/> 
-      { getInitialView() }
       {error ? <h3>{error}</h3> : ''}
+      <Navbar bg="dark" variant="dark">
+        <Container>
+        <Navbar.Brand href="#home" onClick={()=>setCurrentPath('/home')}>Gists</Navbar.Brand>
+        <Nav className="me-auto">
+          <Nav.Link href="/gists/list" onClick={()=>setCurrentPath('/gists/list')}>search</Nav.Link>
+        </Nav>
+        </Container>
+      </Navbar>
+      {getPathView()}
     </div>
   );
 };
